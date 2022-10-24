@@ -37,10 +37,10 @@ jobs:
         cd test
     - name: Run CLI init
       run: |
-        cfn init -t CLI::TEST::INIT -f --artifact-type resource python37 --use-docker
+        cfn init -t CLI::TEST::INIT -f --artifact-type resource -vvv python37 --use-docker
     - name: Run CLI Validate
       run: |
-        cfn validate
+        cfn validate -vvv
     - name: Run CLI Package
       run: |
-        cfn package
+        cfn package -vvv
