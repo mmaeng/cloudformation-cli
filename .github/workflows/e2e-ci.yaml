@@ -27,6 +27,10 @@ jobs:
     - name: Install cli
       run: |
         pip install .
+        curl -s -L https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip -o sam.zip
+        unzip -q sam.zip -d sam-install
+        sudo ./sam-install/install --update
+        sam local start-lambda &
         pip install --quiet cloudformation-cli-python-plugin
         mkdir test
         cd test
