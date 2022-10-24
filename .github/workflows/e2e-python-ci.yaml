@@ -13,7 +13,7 @@ jobs:
       fail-fast: true
       matrix:
         python: [3.6, 3.7, 3.8, 3.9, "3.10"]
-        os: [windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
@@ -28,19 +28,22 @@ jobs:
       run: |
         pip install .
         pip install --quiet cloudformation-cli-python-plugin
-        Invoke-WebRequest -Uri https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe -Outfile "Docker Desktop Installer.exe"
-        Start-Process 'Docker Desktop Installer.exe' -Wait -ArgumentList 'install --quiet --accept-license'
-        Invoke-WebRequest -Uri https://github.com/aws/aws-sam-cli/releases/latest/download/AWS_SAM_CLI_64_PY3.msi -OutFile SAM.msi
-        start-process msiexec.exe -Wait -ArgumentList "/I $pwd\SAM.msi /quiet"
-        Start-Job -ScriptBlock{sam local start-lambda}
+        # Invoke-WebRequest -Uri https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe -Outfile "Docker Desktop Installer.exe"
+        # Start-Process 'Docker Desktop Installer.exe' -Wait -ArgumentList 'install --quiet --accept-license'
+        # Invoke-WebRequest -Uri https://github.com/aws/aws-sam-cli/releases/latest/download/AWS_SAM_CLI_64_PY3.msi -OutFile SAM.msi
+        # start-process msiexec.exe -Wait -ArgumentList "/I $pwd\SAM.msi /quiet"
+        # Start-Job -ScriptBlock{sam local start-lambda}
         mkdir test
         cd test
-    - name: Run CLI init
+    - name: Run Verbose CLI init
       run: |
         cfn init -t CLI::TEST::INIT -f --artifact-type resource -vvv python37 --use-docker
-    - name: Run CLI Validate
+    - name: Run Verbose CLI Validate
       run: |
         cfn validate -vvv
-    - name: Run CLI Package
+    - name: Run Verbose CLI Generage
       run: |
-        cfn package -vvv
+        cfn generate -vvv
+    # - name: Run Verbose CLI Package
+    #   run: |
+    #     cfn package -vvv
