@@ -29,7 +29,7 @@ jobs:
         pip install .
         pip install --quiet cloudformation-cli-python-plugin
         Invoke-WebRequest -Uri https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe -Outfile "Docker Desktop Installer.exe"
-        Start-Process 'Docker Desktop Installer.exe' -Wait install --quiet --accept-license
+        Start-Process 'Docker Desktop Installer.exe' -Wait -ArgumentList 'install --quiet --accept-license'
         Invoke-WebRequest -Uri https://github.com/aws/aws-sam-cli/releases/latest/download/AWS_SAM_CLI_64_PY3.msi -OutFile SAM.msi
         start-process msiexec.exe -Wait -ArgumentList "/I $pwd\SAM.msi /quiet"
         Start-Job -ScriptBlock{sam local start-lambda}
