@@ -3,9 +3,7 @@ name: CloudFormation CLI - OS testing
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    branches: [ e2e-package ]
 
 jobs:
   build:
