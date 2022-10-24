@@ -34,4 +34,4 @@ jobs:
         cd test
         cfn init -t CLI::TEST::INIT -f --artifact-type resource python37 --use-docker
         cfn validate
-        cfn submit --dry-run
+        cfn package
