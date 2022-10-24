@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         python: [3.6, 3.7, 3.8, 3.9, "3.10"]
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
@@ -29,9 +29,11 @@ jobs:
         pip install .
         curl -s -L https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip -o sam.zip
         unzip -q sam.zip -d sam-install
-        sudo ./sam-install/install --update
+        ./sam-install/install --update
         sam local start-lambda &
         pip install --quiet cloudformation-cli-python-plugin
+    - name: Run CLI switches
+      run: |
         mkdir test
         cd test
         cfn init -t CLI::TEST::INIT -f --artifact-type resource python37 --use-docker
