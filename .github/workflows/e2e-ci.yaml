@@ -1,5 +1,5 @@
 # This workflow will install Python dependencies, run tests and lint with a multiple versions of Python on Linux/Mac/Windows
-name: CloudFormation CLI - OS testing
+name: CloudFormation CLI - Python Windows
 
 on:
   push:
@@ -10,7 +10,7 @@ jobs:
     env:
       AWS_DEFAULT_REGION: us-east-1
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         python: [3.6, 3.7, 3.8, 3.9, "3.10"]
         os: [windows-latest]
@@ -28,13 +28,19 @@ jobs:
       run: |
         pip install .
         pip install --quiet cloudformation-cli-python-plugin
+        Invoke-WebRequest -Uri https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe -Outfile "Docker Desktop Installer.exe"
+        Start-Process 'Docker Desktop Installer.exe' -Wait install --quiet --accept-license
         Invoke-WebRequest -Uri https://github.com/aws/aws-sam-cli/releases/latest/download/AWS_SAM_CLI_64_PY3.msi -OutFile SAM.msi
         start-process msiexec.exe -Wait -ArgumentList "/I $pwd\SAM.msi /quiet"
         Start-Job -ScriptBlock{sam local start-lambda}
-    - name: Run CLI switches
-      run: |
         mkdir test
         cd test
+    - name: Run CLI init
+      run: |
         cfn init -t CLI::TEST::INIT -f --artifact-type resource python37 --use-docker
+    - name: Run CLI Validate
+      run: |
         cfn validate
+    - name: Run CLI Package
+      run: |
         cfn package
