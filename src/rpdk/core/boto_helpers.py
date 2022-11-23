@@ -4,7 +4,7 @@ from datetime import datetime
 import botocore.loaders
 import botocore.regions
 from boto3 import Session as Boto3Session
-from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError, PartialCredentialsError
 
 from .exceptions import CLIMisconfiguredError, DownstreamError
 
@@ -26,8 +26,11 @@ def create_sdk_session(region_name=None):
     if session.region_name is None:
         _known_error("No region specified")
 
-    if session.get_credentials() is None:
-        _known_error("No credentials specified")
+    try:
+        if session.get_credentials() is None:
+            _known_error("No credentials specified")
+    except (PartialCredentialsError, ClientError):
+        _known_error("Credentials error")
 
     return session
 
