@@ -10,6 +10,7 @@ from uuid import uuid4
 import docker
 from botocore import UNSIGNED
 from botocore.config import Config
+from botocore.exceptions import EndpointConnectionError
 
 from rpdk.core.contract.interface import Action, HandlerErrorCode, OperationStatus
 from rpdk.core.contract.type_configuration import TypeConfiguration
@@ -181,6 +182,7 @@ class ResourceClient:  # pylint: disable=too-many-instance-attributes
             get_temporary_credentials(self._session, LOWER_CAMEL_CRED_KEYS, role_arn),
         )
         self._function_name = function_name
+        self._endpoint = endpoint
         if endpoint.startswith("http://"):
             self._client = self._session.client(
                 "lambda",
@@ -639,9 +641,14 @@ class ResourceClient:  # pylint: disable=too-many-instance-attributes
             regex = "__CFN_RESOURCE_START_RESPONSE__([\s\S]*)__CFN_RESOURCE_END_RESPONSE__"  # noqa: W605,B950 # pylint: disable=C0301
             payload = json.loads(re.search(regex, result).group(1))
         else:
-            result = self._client.invoke(
-                FunctionName=self._function_name, Payload=payload.encode("utf-8")
-            )
+            try:
+                result = self._client.invoke(
+                    FunctionName=self._function_name, Payload=payload.encode("utf-8")
+                )
+            except EndpointConnectionError as e:
+                raise ConnectionError(
+                    f"Unable to connect to endpoint {self._endpoint}. Please verify that `sam local start-lambda` is running."
+                ) from e
 
             try:
                 payload = json.load(result["Payload"])
