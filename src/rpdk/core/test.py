@@ -423,7 +423,8 @@ def setup_subparser(subparsers, parents):
 
     _sam_arguments(parser)
     # this parameter can be used to pass additional arguments to pytest after `--`
-    # for example,
+    # for example, to override data/pytest-contract.ini options 
+    # `cfn test -- -o log_cli=False -o log_cli_level=WARN -o console_output_style=count`
 
     parser.add_argument(
         "--role-arn", help="Role used when performing handler operations."
