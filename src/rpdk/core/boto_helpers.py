@@ -95,5 +95,11 @@ def get_account(session, temporary_credentials):
         aws_secret_access_key=temporary_credentials["secretAccessKey"],
         aws_session_token=temporary_credentials["sessionToken"],
     )
-    response = sts_client.get_caller_identity()
+    try:
+        response = sts_client.get_caller_identity()
+    except ClientError as e:
+        LOG.debug(
+            "ClientError when getting caller identity, Invalid credentials", exc_info=e
+        )
+        raise DownstreamError("Unknown caller identity, Invalid credentials") from e
     return response.get("Account")
