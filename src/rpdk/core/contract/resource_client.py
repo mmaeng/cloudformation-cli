@@ -658,6 +658,8 @@ class ResourceClient:  # pylint: disable=too-many-instance-attributes
                     "Handler Output is not a valid JSON document"
                 ) from json_error
         LOG.debug("Received response\n%s", payload)
+        if payload.get('errorCode'):
+            LOG.error(f"errorCode: {payload.get('errorCode')}\nmessage: {payload.get('message')}")
         return payload
 
     def call_and_assert(
